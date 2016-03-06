@@ -4,19 +4,25 @@
   "description": "Template compiler for HubPress",
   "main": "lib/templatePlugin.js",
   "scripts": {
-    "compile": "babel --presets es2015 -d lib/ src/",
+    "compile": "babel --presets es2015 -d lib/ src/ && find ./lib -name '*.js' -exec ./node_modules/uglify-js/bin/uglifyjs --compress --mangle --output {} -- {} \\;  && mkdir -p lib/helpers && cp -pR src/helpers/tpl $_",
     "prepublish": "npm run compile",
     "test": "npm run compile && mocha --compilers js:babel-core/register"
   },
   "author": "Anthonny Quérouil <anthonny.querouil@gmail.com> (http://anthonnyquerouil.fr)",
   "license": "MIT",
+  "files": [
+    "lib"
+  ],
   "dependencies": {
     "downsize": "0.0.8",
     "handlebars": "^4.0.5",
-    "hubpress-core-slugify": "file:///Users/anthonny/github/hubpress-core-slugify/hubpress-core-slugify-0.1.0.tgz",
+    "hubpress-core-slugify": "github:hubpress/hubpress-core-slugify#59d8f72",
     "lodash": "^4.5.0",
     "moment": "^2.11.2",
     "q": "^1.4.1",
     "superagent": "^1.7.2"
+  },
+  "devDependencies": {
+    "uglify-js": "^2.6.2"
   }
 }

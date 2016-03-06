@@ -8,26 +8,32 @@
 // The 3rd argument is the string that will be output if the variable's value is 1
 // The 4th argument is the string that will be output if the variable's value is 2+
 
-var handlebars             = require('handlebars'),
-    //errors          = require('../errors'),
+var handlebars = require('handlebars'),
+    hbs = {
+      handlebars: handlebars
+    },
+    // errors          = require('../errors'),
     _               = require('lodash'),
+    // i18n            = require('../i18n'),
     plural;
+
+function logAndThrowError(err) {
+  console.log(err);
+  throw new Error(err);
+}
 
 plural = function (context, options) {
     if (_.isUndefined(options.hash) || _.isUndefined(options.hash.empty) ||
         _.isUndefined(options.hash.singular) || _.isUndefined(options.hash.plural)) {
-          var err = 'All values must be defined for empty, singular and plural';
-          console.log(err);
-          throw new Error(err);
-        return;
+        return logAndThrowError('warnings.helpers.plural.valuesMustBeDefined');
     }
 
     if (context === 0) {
-        return new handlebars.SafeString(options.hash.empty);
+        return new hbs.handlebars.SafeString(options.hash.empty.replace('%', context));
     } else if (context === 1) {
-        return new handlebars.SafeString(options.hash.singular.replace('%', context));
+        return new hbs.handlebars.SafeString(options.hash.singular.replace('%', context));
     } else if (context >= 2) {
-        return new handlebars.SafeString(options.hash.plural.replace('%', context));
+        return new hbs.handlebars.SafeString(options.hash.plural.replace('%', context));
     }
 };
 

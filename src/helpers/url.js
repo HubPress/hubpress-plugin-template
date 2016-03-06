@@ -4,36 +4,12 @@
 // Returns the URL for the current object scope i.e. If inside a post scope will return post permalink
 // `absolute` flag outputs absolute URL, else URL is relative
 
-//import SettingsStore from '../stores/SettingsStore';
-var url;
+var getMetaDataUrl = require('../data/meta/url');
 
-function isPost(jsonData) {
-  return jsonData.hasOwnProperty('html') &&
-  jsonData.hasOwnProperty('title');
-}
-
-url = function (options) {
+function url(options) {
     var absolute = options && options.hash.absolute;
 
-    if (isPost(this)) {
-      var postUrl = '';
-
-      if (absolute) {
-        postUrl = this.urls.site;
-      }
-      postUrl += this.url;
-      return postUrl;
-    }
-
-    // if (schema.isTag(this)) {
-    //     return config.urlFor('tag', {tag: this}, absolute);
-    // }
-    //
-    // if (schema.isUser(this)) {
-    //     return config.urlFor('author', {author: this}, absolute);
-    // }
-
-    return absolute ? this.urls.site + this.relativeUrl : this.relativeUrl;
-};
+    return getMetaDataUrl(this, absolute);
+}
 
 module.exports = url;

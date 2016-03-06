@@ -6,7 +6,10 @@
 //
 // Enables tag-safe truncation of content by characters or words.
 
-var handlebars             = require('handlebars'),
+var handlebars = require('handlebars'),
+    hbs = {
+      handlebars: handlebars
+    },
     _               = require('lodash'),
     downsize        = require('downsize'),
     downzero        = require('../utils/downzero'),
@@ -22,17 +25,17 @@ content = function (options) {
     if (truncateOptions.hasOwnProperty('words') || truncateOptions.hasOwnProperty('characters')) {
         // Legacy function: {{content words="0"}} should return leading tags.
         if (truncateOptions.hasOwnProperty('words') && truncateOptions.words === 0) {
-            return new handlebars.SafeString(
+            return new hbs.handlebars.SafeString(
                 downzero(this.html)
             );
         }
 
-        return new handlebars.SafeString(
+        return new hbs.handlebars.SafeString(
             downsize(this.html, truncateOptions)
         );
     }
 
-    return new handlebars.SafeString(this.html);
+    return new hbs.handlebars.SafeString(this.html);
 };
 
 module.exports = content;

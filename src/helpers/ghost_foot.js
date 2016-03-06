@@ -38,7 +38,7 @@ ghost_foot = function (options) {
           });
         });
 
-        hljs.initHighlightingOnLoad();      
+        hljs.initHighlightingOnLoad();
       </script>
       `
 

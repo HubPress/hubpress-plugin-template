@@ -16,13 +16,17 @@ export function generatePost (opts, post) {
     };
   });
 
-  const userInfos = opts.state.authentication.credentials.userInformations;
+  // If it's a new post postData.author is undefined
+  const userInfos = postData.author;// || opts.state.authentication.credentials.userInformations;
   postData.author = {
     id: userInfos.id,
-    name: userInfos.name,
+    name: userInfos.name || userInfos.login,
     location:userInfos.location,
     website:userInfos.blog,
-    image:userInfos.avatar_url
+    image:userInfos.avatar_url,
+    bio: userInfos.bio,
+    status: '',
+    slug: userInfos.login
   };
 
   const config = opts.data.config;
@@ -33,16 +37,18 @@ export function generatePost (opts, post) {
     url: config.urls.theme
   };
   postData.urls = urls;
+  postData.status = 'published';
 
   const htmlContent = Builder.template('post',{
       context: 'post',
-      site: config.site,
-      theme: theme,
-      urls: urls,
+      // site: config.site,
+      // theme: theme,
+      // urls: urls,
       socialnetwork: config.socialnetwork,
       relativeUrl: modifiedPost.url,
-      post: postData
-    });
+      post: postData,
+      author: postData.author
+    }, _.pick(opts.data, ['config', 'theme']));
 
   const postsToPublish = []
   postsToPublish.push({
@@ -50,6 +56,7 @@ export function generatePost (opts, post) {
     image: modifiedPost.image,
     name:modifiedPost.name,
     path:config.urls.getPostGhPath(modifiedPost.name),
+    url:config.urls.getPostGhPath(modifiedPost.name),
     content:htmlContent,
     message: `Publish ${modifiedPost.name}`,
     published_at: modifiedPost.published_at

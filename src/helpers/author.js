@@ -10,12 +10,13 @@
 // Block helper: `{{#author}}{{/author}}`
 // This is the default handlebars behaviour of dropping into the author object scope
 
-var handlebars             = require('handlebars'),
+var handlebars = require('handlebars'),
+    hbs = {
+      handlebars: handlebars
+    },
     _               = require('lodash'),
-    /*
     config          = require('../config'),
     utils           = require('./utils'),
-    */
     author;
 
 author = function (context, options) {
@@ -24,16 +25,13 @@ author = function (context, options) {
     }
 
     if (options.fn) {
-        return handlebars.helpers['with'].call(this, this.author, options);
+        return hbs.handlebars.helpers.with.call(this, this.author, options);
     }
 
-    /*
     var autolink = _.isString(options.hash.autolink) && options.hash.autolink === 'false' ? false : true,
-    */
-    var output = '';
+        output = '';
 
     if (this.author && this.author.name) {
-      /*
         if (autolink) {
             output = utils.linkTemplate({
                 url: config.urlFor('author', {author: this.author}),
@@ -42,11 +40,9 @@ author = function (context, options) {
         } else {
             output = _.escape(this.author.name);
         }
-      */
-        output = _.escape(this.author.name);
     }
 
-    return new handlebars.SafeString(output);
+    return new hbs.handlebars.SafeString(output);
 };
 
 module.exports = author;

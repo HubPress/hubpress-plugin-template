@@ -6,7 +6,15 @@ import slugify from 'hubpress-core-slugify';;
 export function generateTags (opts) {
   console.info('TagsGenerator - generate');
   console.log('TagsGenerator - generate', opts);
+  const template = 'tag';
   let posts;
+
+
+  // If template Author is not available, do not process
+  if (!Builder.isTemplateAvailable(template)) {
+    return opts;
+  }
+
 
   if (opts.data.post && !opts.data.post.tags && !opts.data.tags ) {
     return opts;
@@ -52,8 +60,6 @@ export function generateTags (opts) {
 
   }, {});
 
-  console.log('TAAAG TAGS', tags);
-
   let returnedOpts = opts;
   _.each(tags, (tag, key) => {
 
@@ -61,8 +67,7 @@ export function generateTags (opts) {
       name: key,
       slug: slugify(key)
     }
-    console.log('TAGGGG', key, tag)
-    returnedOpts = paginationGenerator.generate({opts: returnedOpts, posts: tag, tag: tagObject, template: 'tag', path: `tag/${key}/`});
+    returnedOpts = paginationGenerator.generate({opts: returnedOpts, posts: tag, tag: tagObject, template, path: `tag/${key}/`});
 
   });
 

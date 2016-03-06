@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
-const helpers = require('./helpers');
+import helpers from './helpers';
+import config from './config';
 
 class Builder {
 
@@ -18,6 +19,7 @@ class Builder {
 
     const blog = config.site || {};
     blog.url = config.urls.site;
+    blog.navigation = [];
 
     this.templateOptions = {
       data: {
@@ -51,9 +53,10 @@ class Builder {
     });
   }
 
-  template(templateName, data) {
+  template(templateName, data, context) {
     console.info('Builder - template');
-    console.log('Builder - template', templateName, data);
+    console.log('Builder - template', templateName, data, context);
+    config.set(context);
     let templateCache = this.templateCache.get(templateName);
     let htmlContent = templateCache.template(data, this.templateOptions);
 
@@ -79,6 +82,10 @@ class Builder {
   }
   setThemeVersion(version) {
     this.version = version;
+  }
+
+  isTemplateAvailable(template) {
+    return this.templateCache.get(template);
   }
 
 }

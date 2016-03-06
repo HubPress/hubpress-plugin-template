@@ -2,6 +2,8 @@
 // Usage: `{{#is "paged"}}`, `{{#is "index, paged"}}`
 // Checks whether we're in a given context.
 var _               = require('lodash'),
+    // errors          = require('../errors'),
+    // i18n            = require('../i18n'),
     is;
 
 is = function (context, options) {
@@ -10,15 +12,15 @@ is = function (context, options) {
     var currentContext = options.data.root.context;
 
     if (!_.isString(context)) {
-        console.log('Invalid or no attribute given to is helper');
-        return;
+      //errors.logWarn(i18n.t('warnings.helpers.is.invalidAttribute'));
+      console.warn('Helpers is has an invalid attribute')
     }
 
     function evaluateContext(expr) {
         return expr.split(',').map(function (v) {
             return v.trim();
         }).reduce(function (p, c) {
-            return p || _.some(currentContext, c);
+            return p || _.includes(currentContext, c);
         }, false);
     }
 

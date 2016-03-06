@@ -1,0 +1,8 @@
+= HubPress: template
+
+Use template to build html pages
+
+== TODO
+
+. Complete this README
+. Add tests

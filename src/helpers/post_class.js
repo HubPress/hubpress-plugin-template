@@ -6,7 +6,10 @@
 // We use the name body_class to match the helper for consistency:
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
-var handlebars             = require('handlebars'),
+var handlebars = require('handlebars'),
+    hbs = {
+      handlebars: handlebars
+    },
     _               = require('lodash'),
     post_class;
 
@@ -29,8 +32,8 @@ post_class = function (options) {
         classes.push('page');
     }
 
-    var classString = _.reduce(classes, function (memo, item) { return memo + ' ' + item; }, '');
-    return new handlebars.SafeString(classString.trim());
+    classes = _.reduce(classes, function (memo, item) { return memo + ' ' + item; }, '');
+    return new hbs.handlebars.SafeString(classes.trim());
 };
 
 module.exports = post_class;

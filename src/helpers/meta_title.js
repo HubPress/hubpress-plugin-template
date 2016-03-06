@@ -6,40 +6,11 @@
 // We use the name meta_title to match the helper for consistency:
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
-//import SettingsStore from '../stores/SettingsStore';
-var _           = require('lodash'),
-    meta_title;
+var getMetaDataTitle = require('../data/meta/title');
 
-meta_title = function (options) {
-    /*jshint unused:false*/
-    var title = '',
-        blog,
-        page,
-        pageString = '';
-
-    if (_.isString(this.relativeUrl)) {
-
-        page = this.relativeUrl.match(/\/page\/(\d+)/);
-
-        if (page) {
-            pageString = ' - Page ' + page[1];
-        }
-
-        if (!this.relativeUrl || this.relativeUrl === '/' || this.relativeUrl === '') {
-            title = this.site.title;
-        } else if (this.author) {
-            title = this.author.name + pageString + ' - ' + this.site.title;
-        } else if (this.tag) {
-            title = _.isEmpty(this.tag.meta_title) ? this.tag.name + pageString + ' - ' + this.site.title : this.tag.meta_title;
-        } else if (this.post) {
-            title = _.isEmpty(this.post.meta_title) ? this.post.title : this.post.meta_title;
-        } else {
-            title = this.site.title + pageString;
-        }
-    }
-
-    title = title || '';
-    return title.trim();
-};
+function meta_title(options) {
+    options = options || {data:{}};
+    return getMetaDataTitle(this, options.data.root);
+}
 
 module.exports = meta_title;

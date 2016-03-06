@@ -4,6 +4,8 @@
 // Checks if a post has a particular property
 
 var _               = require('lodash'),
+    // errors          = require('../errors'),
+    // i18n            = require('../i18n'),
     has;
 
 has = function (options) {
@@ -35,11 +37,12 @@ has = function (options) {
             return v.trim().toLocaleLowerCase();
         });
 
-        return _.some(authorList, author.toLocaleLowerCase());
+        return _.includes(authorList, author.toLocaleLowerCase());
     }
 
     if (!tagList && !authorList) {
-        console.warn('Invalid or no attribute given to has helper');
+        //errors.logWarn(i18n.t('warnings.helpers.has.invalidAttribute'));
+        console.warn('Helpers has has invalid attribute')
         return;
     }
 

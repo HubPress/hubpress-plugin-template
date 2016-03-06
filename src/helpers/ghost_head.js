@@ -6,161 +6,129 @@
 // We use the name ghost_head to match the helper for consistency:
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
-var handlebars      = require('handlebars'),
-    moment          = require('moment'),
-    _               = require('lodash'),
+var getMetaData = require('../data/meta'),
+    handlebars = require('handlebars'),
+    hbs = {
+      handlebars: handlebars
+    },
+    escapeExpression = hbs.handlebars.Utils.escapeExpression,
+    SafeString = hbs.handlebars.SafeString,
+    _ = require('lodash'),
+    //filters = require('../filters'),
+    // assetHelper = require('./asset'),
+    config = require('../config');
+    //Promise = require('bluebird')
+    //labs = require('../utils/labs'),
+    //api = require('../api');
 
-    //config          = require('../config'),
+// function getClient() {
+//     if (labs.isSet('publicAPI') === true) {
+//         return api.clients.read({slug: 'ghost-frontend'}).then(function (client) {
+//             client = client.clients[0];
+//             if (client.status === 'enabled') {
+//                 return {
+//                     id: client.slug,
+//                     secret: client.secret
+//                 };
+//             }
+//             return {};
+//         });
+//     }
+//     return Promise.resolve({});
+// }
 
-    urlHelper           = require('./url'),
-    meta_description    = require('./meta_description'),
-    meta_title          = require('./meta_title'),
-    excerpt             = require('./excerpt'),
-    tagsHelper          = require('./tags'),
-    imageHelper         = require('./image'),
-    utils               = require('./utils'),
-    ghost_head;
+function writeMetaTag(property, content, type) {
+    type = type || property.substring(0, 7) === 'twitter' ? 'name' : 'property';
+    return '<meta ' + type + '="' + property + '" content="' + content + '" />';
+}
 
-ghost_head = function (options) {
-    /*jshint unused:false*/
-    var self = this,
-        useStructuredData = true, // !config.isPrivacyDisabled('useStructuredData'),
+function finaliseStructuredData(metaData) {
+    var head = [];
+    _.each(metaData.structuredData, function (content, property) {
+        if (property === 'article:tag') {
+            _.each(metaData.keywords, function (keyword) {
+                if (keyword !== '') {
+                    keyword = escapeExpression(keyword);
+                    head.push(writeMetaTag(property,
+                        escapeExpression(keyword)));
+                }
+            });
+            head.push('');
+        } else if (content !== null && content !== undefined) {
+            head.push(writeMetaTag(property,
+                escapeExpression(content)));
+        }
+    });
+    return head;
+}
+
+// function getAjaxHelper(clientId, clientSecret) {
+//     return '<script type="text/javascript" src="' +
+//         assetHelper('shared/ghost-url.js', {hash: {minifyInProduction: true}}) + '"></script>\n' +
+//         '<script type="text/javascript">\n' +
+//         'ghost.init({\n' +
+//         '\tclientId: "' + clientId + '",\n' +
+//         '\tclientSecret: "' + clientSecret + '"\n' +
+//         '});\n' +
+//         '</script>';
+// }
+
+function ghost_head(options) {
+    // if error page do nothing
+    console.error('Check ghost_head options', options)
+    if (this.statusCode >= 400) {
+        return;
+    }
+    var metaData = getMetaData(this, options.data.root),
         head = [],
-        majorMinor = /^(\d+\.)?(\d+)/,
-        trimmedVersion = this.version,
-        trimmedUrlpattern = /.+(?=\/page\/\d*\/)/,
-        trimmedUrl, next, prev, tags,
-        structuredData,
-        cover, authorImage, keywords,
-        schema,
-        title = handlebars.Utils.escapeExpression(self.title);
+        context = this.context ? (Array.isArray(this.context) ? this.context[0] : this.context) : null,
+        useStructuredData = !config.isPrivacyDisabled('useStructuredData'),
+        safeVersion = this.safeVersion;
 
-    trimmedVersion = trimmedVersion ? trimmedVersion.match(majorMinor)[0] : '?';
+    //return getClient().then(function (client) {
+        if (context) {
+            // head is our main array that holds our meta data
+            head.push('<link rel="canonical" href="' +
+            escapeExpression(metaData.canonicalUrl) + '" />');
+            head.push('<meta name="referrer" content="origin" />');
 
-
-    // Resolves promises then push pushes meta data into ghost_head
-    var url = urlHelper.call(self, {hash: {absolute: true}}),
-        metaDescription = meta_description.call(self),
-        metaTitle = meta_title.call(self),
-        cover = null,
-        authorImage =  null,
-        publishedDate, modifiedDate,
-        tags = tagsHelper.call(self.post, {hash: {autolink: 'false'}}).string.split(','),
-        card = 'summary',
-        type, authorUrl;
-
-      if (self.post) {
-        cover = imageHelper.call(self.post, {hash: {absolute:true}});
-
-        if (self.post.author) {
-          authorImage = imageHelper.call(self.post.author, {hash: {absolute:true}});
-        }
-      }
-
-    if (!metaDescription && self.post) {
-        metaDescription = excerpt.call(self.post, {hash: {words: '40'}}).string;
-    }
-    if (tags[0] !== '') {
-        keywords = handlebars.Utils.escapeExpression(tagsHelper.call(self.post, {hash: {autolink: 'false', seperator: ', '}}).string);
-    }
-    head.push('<link rel="canonical" href="' + url + '" />');
-
-    if (self.pagination) {
-        //trimmedUrl = self.relativeUrl.match(trimmedUrlpattern);
-        if (self.pagination.prev) {
-            prev = (self.pagination.prev > 1 ? prev = '/page/' + self.pagination.prev + '/' : prev = '/');
-            //prev = (trimmedUrl) ? '/' + trimmedUrl + prev : prev;
-            head.push('<link rel="prev" href="' +  self.urls.site + prev + '" />');
-        }
-        if (self.pagination.next) {
-            next = '/page/' + self.pagination.next + '/';
-            //next = (trimmedUrl) ? '/' + trimmedUrl + next : next;
-            head.push('<link rel="next" href="' +  self.urls.site + next + '" />');
-        }
-    }
-
-    // Test to see if we are on a post page and that Structured data has not been disabled in config.js
-    if (self.post && useStructuredData) {
-        publishedDate = moment(self.post.published_at).toISOString();
-        modifiedDate = moment(self.post.updated_at).toISOString();
-
-        if (cover) {
-            card = 'summary_large_image';
-        }
-
-        // escaped data
-        metaTitle = handlebars.Utils.escapeExpression(metaTitle);
-        metaDescription = handlebars.Utils.escapeExpression(metaDescription + '...');
-        authorUrl = '';
-        if (self.post && self.post.author) {
-          authorUrl = handlebars.Utils.escapeExpression(self.url + '/author/' + self.post.author.slug);
-        }
-
-        schema = {
-            '@context': 'http://schema.org',
-            '@type': 'Article',
-            publisher: title,
-            author: {
-                '@type': 'Person',
-                name: self.post.author.name,
-                image: authorImage,
-                url: authorUrl,
-                sameAs: self.post.author.website
-            },
-            headline: metaTitle,
-            url: url,
-            datePublished: publishedDate,
-            dateModified: modifiedDate,
-            image: cover,
-            keywords: keywords,
-            description: metaDescription
-        };
-
-        structuredData = {
-            'og:site_name': title,
-            'og:type': 'article',
-            'og:title': metaTitle,
-            'og:description': metaDescription,
-            'og:url': url,
-            'og:image': cover,
-            'article:published_time': publishedDate,
-            'article:modified_time': modifiedDate,
-            'article:tag': tags,
-            'twitter:card': card,
-            'twitter:title': metaTitle,
-            'twitter:description': metaDescription,
-            'twitter:url': url,
-            'twitter:image:src': cover
-        };
-        head.push('');
-        _.each(structuredData, function (content, property) {
-            if (property === 'article:tag') {
-                _.each(tags, function (tag) {
-                    if (tag !== '') {
-                        tag = handlebars.Utils.escapeExpression(tag.trim());
-                        head.push('<meta property="' + property + '" content="' + tag + '" />');
-                    }
-                });
-                head.push('');
-            } else if (content !== null && content !== undefined) {
-                type = property.substring(0, 7) === 'twitter' ? 'name' : 'property';
-                head.push('<meta ' + type + '="' + property + '" content="' + content + '" />');
+            if (metaData.previousUrl) {
+                head.push('<link rel="prev" href="' +
+                escapeExpression(metaData.previousUrl) + '" />');
             }
-        });
-        head.push('');
-        head.push('<script type="application/ld+json">\n' + JSON.stringify(schema, null, '    ') + '\n    </script>\n');
-    }
 
-    head.push('<meta name="generator" content="Ghost ' + trimmedVersion + '" />');
-    head.push('<link rel="alternate" type="application/rss+xml" title="' +
-        title  + '" href="' + self.urls.site + '/rss" />');
-    head.push(utils.stylesheetTemplate({
-        source: '//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css',
-        version: ''
-    }));
+            if (metaData.nextUrl) {
+                head.push('<link rel="next" href="' +
+                escapeExpression(metaData.nextUrl) + '" />');
+            }
 
-    var headString = _.reduce(head, function (memo, item) { return memo + '\n    ' + item; }, '');
-    return new handlebars.SafeString(headString.trim());
-};
+            if (context !== 'paged' && context !== 'page' && useStructuredData) {
+                head.push('');
+                head.push.apply(head, finaliseStructuredData(metaData));
+                head.push('');
+
+                head.push('<script type="application/ld+json">\n' +
+                JSON.stringify(metaData.schema, null, '    ') +
+                '\n    </script>\n');
+            }
+
+            //if (client && client.id && client.secret) {
+            //    head.push(getAjaxHelper(client.id, client.secret));
+            //}
+        }
+
+        head.push('<meta name="generator" content="HubPress" />');
+        head.push('<link rel="alternate" type="application/rss+xml" title="' +
+        escapeExpression(metaData.blog.title)  + '" href="' +
+        escapeExpression(metaData.rssUrl) + '" />');
+
+    //    return api.settings.read({key: 'ghost_head'});
+    //}).then(function (response) {
+    //    head.push(response.settings[0].value);
+    //    return filters.doFilter('ghost_head', head);
+    //}).then(function (head) {
+        return new SafeString(head.join('\n    ').trim());
+    //});
+}
 
 module.exports = ghost_head;

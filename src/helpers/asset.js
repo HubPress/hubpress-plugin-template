@@ -3,34 +3,27 @@
 //
 // Returns the path to the specified asset. The ghost flag outputs the asset path for the Ghost admin
 
-// import SettingsStore from '../stores/SettingsStore';
-// import ThemeStore from '../stores/ThemeStore';
-var handlebars      = require('handlebars');
-var utils           = require('./utils');
-var asset;
+var getAssetUrl = require('../data/meta/asset_url'),
 
-asset = function (context, options) {
-    var output = '',
-        isAdmin = options && options.hash && options.hash.ghost;
+    handlebars = require('handlebars'),
+    hbs = {
+      handlebars: handlebars
+    };
 
-    output += this.urls.theme + '/';
+function asset(context, options) {
+    var isAdmin = false,
+        minify = false;
 
-    if (!context.match(/^favicon\.ico$/) && !context.match(/^asset/)) {
-      output += 'assets/';
-    }
-
-    // Get rid of any leading slash on the context
-    context = context.replace(/^\//, '');
-    output += context;
-
-    if (!context.match(/^favicon\.ico$/)) {
-        output = utils.assetTemplate({
-            source: output,
-            version: this.theme.version
-        });
-    }
-
-    return new handlebars.SafeString(output);
-};
+    // if (options && options.hash) {
+    //     isAdmin = options.hash.ghost;
+    //     minify = options.hash.minifyInProduction;
+    // }
+    // if (process.env.NODE_ENV !== 'production') {
+    //     minify = false;
+    // }
+    return new hbs.handlebars.SafeString(
+        getAssetUrl(context, isAdmin, minify)
+    );
+}
 
 module.exports = asset;

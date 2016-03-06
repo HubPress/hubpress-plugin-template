@@ -4,6 +4,7 @@ import { generateIndex } from './indexGenerator';
 import { generatePost } from './postGenerator';
 import { generatePosts } from './postsGenerator';
 import { generateTags } from './tagsGenerator';
+import { generateAuthors } from './authorsGenerator';
 import Builder from './builder';
 
 function load(name, config) {
@@ -23,6 +24,7 @@ function load(name, config) {
       let files = _.toPairs(theme.files);
 
       let paginationLoaded = false;
+      let navLoaded = false;
       let navigationLoaded = false;
 
       files.forEach((file) => {
@@ -30,7 +32,8 @@ function load(name, config) {
         promises.push(deferredFile.promise);
 
         paginationLoaded = paginationLoaded || file[0] === 'pagination';
-        navigationLoaded = navigationLoaded || file[0] === 'nav';
+        navLoaded = navLoaded || file[0] === 'nav';
+        navigationLoaded = navigationLoaded || file[0] === 'navigation';
 
         request.get(`${hubpressUrl}/themes/${name}/${file[1]}?v=${version}`)
           .end((err, response) => {
@@ -66,7 +69,7 @@ function load(name, config) {
           });
       }
 
-      if (!navigationLoaded) {
+      if (!navLoaded) {
         let deferredNav = Q.defer();
         promises.push(deferredNav.promise);
         request.get(`${hubpressUrl}/hubpress/scripts/helpers/tpl/nav.hbs`)
@@ -78,6 +81,23 @@ function load(name, config) {
             deferredNav.resolve({
               name: 'nav',
               path: 'partials/nav',
+              content: response.text
+            });
+          });
+      }
+
+      if (!navigationLoaded) {
+        let deferredNav = Q.defer();
+        promises.push(deferredNav.promise);
+        request.get(`${hubpressUrl}/hubpress/scripts/helpers/tpl/navigation.hbs`)
+          .end((err, response) => {
+            if (err) {
+              deferredNav.reject(err)
+              return;
+            }
+            deferredNav.resolve({
+              name: 'navigation',
+              path: 'partials/navigation',
               content: response.text
             });
           });
@@ -136,6 +156,10 @@ export function templatePlugin (hubpress) {
 
     hubpress.on('requestGenerateTags', opts => {
       return generateTags(opts, opts.data.post);
+    });
+
+    hubpress.on('requestGenerateAuthors', opts => {
+      return generateAuthors(opts, opts.data.post);
     });
 
 }

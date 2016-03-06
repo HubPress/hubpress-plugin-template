@@ -24,17 +24,6 @@ class PaginationGenerator {
     let urls = config.urls;
     let socialnetwork = config.socialnetwork;
 
-
-    const userInfos = params.opts.state.authentication.credentials.userInformations;
-    const author = {
-      id: userInfos.id,
-      name: userInfos.name,
-      location:userInfos.location,
-      website:userInfos.blog,
-      image:userInfos.avatar_url
-    };
-
-
     if (!posts || !posts.length) {
       let htmlContent = Builder.template(params.template ,{
         pagination: {
@@ -47,19 +36,19 @@ class PaginationGenerator {
         },
         posts: [],
         tag: params.tag,
-        site: siteConfig,
-        theme: theme,
-        urls: urls,
+        author: params.author,
+        // site: siteConfig,
+        // theme: theme,
+        // urls: urls,
         socialnetwork: socialnetwork,
         title: siteConfig.title,
-      });
+      }, _.pick(params.opts.data, ['config', 'theme']));
 
       postsPageToPublish.push( {
         name:`page-${pageCount}`,
         path: pagePath,
         content: htmlContent,
-        message: `Publish page-${pageCount} ${params.template}`,
-        author: author
+        message: `Publish page-${pageCount} ${params.template}`
       })
 
       const elementsToPublish = (params.opts.data.elementsToPublish || []).concat(postsPageToPublish);
@@ -85,7 +74,6 @@ class PaginationGenerator {
       }
 
       let postTags;
-      console.error('TESTME : Check if tag are here')
       if (post.tags){ //(post.attributes.map['hp-tags']) {
         postTags = _.map(post.tags, (tag) => {
           return  {
@@ -95,7 +83,14 @@ class PaginationGenerator {
         });
       }
 
-
+      const author = {
+        id: post.author.id,
+        name: post.author.name || post.author.login,
+        location:post.author.location,
+        website:post.author.blog,
+        image:post.author.avatar_url,
+        slug: post.author.login
+      };
       postsPageToGenerate.push({
         image: post.image,
         title: post.title,
@@ -104,9 +99,11 @@ class PaginationGenerator {
         html: post.excerpt,
         tags: postTags,
         published_at: post.published_at,
-        theme: theme,
-        urls: urls,
-        relativeUrl: ''
+        // site: siteConfig,
+        // theme: theme,
+        // urls: urls,
+        relativeUrl: siteConfig.url+post.url, // not a relative, absolute one,
+        author: author
       });
 
       if (Math.floor((index + 1) / nbPostPerPage) > pageCount-1 || (index + 1)===posts.length) {
@@ -122,24 +119,24 @@ class PaginationGenerator {
               total: posts.length,
               limit: nbPostPerPage
             },
-            context: params.template,
+            context: params.template === 'index' ? 'home' : params.template,
             posts: postsPageToGenerate,
             tag: params.tag,
+            author: params.author,
             title: siteConfig.title,
             description: siteConfig.description,
-            site: siteConfig,
-            theme: theme,
-            urls: urls,
+            // site: siteConfig,
+            // theme: theme,
+            // urls: urls,
             socialnetwork: socialnetwork,
             relativeUrl: ''
-          });
+          }, _.pick(params.opts.data, ['config', 'theme']));
 
         postsPageToPublish.push( {
           name:`page-${pageCount}`,
           path: pagePath,
           content: htmlContent,
-          message: `Publish page-${pageCount} ${params.template}`,
-          author: author
+          message: `Publish page-${pageCount} ${params.template}`
         });
 
         postsPageToGenerate = [];
