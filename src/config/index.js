@@ -190,7 +190,9 @@ ConfigManager.prototype.set = function (context) {
         },
         theme: {
             // normalise the URL by removing any trailing slash
-            url: config.urls && config.urls.theme
+            url: config.urls && config.urls.theme,
+            // Not sure it's the best place to put the title ...
+            title: config.site && config.site.title
         },
         routeKeywords: {
             tag: 'tag',

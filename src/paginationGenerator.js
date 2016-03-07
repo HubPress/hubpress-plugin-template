@@ -119,7 +119,7 @@ class PaginationGenerator {
               total: posts.length,
               limit: nbPostPerPage
             },
-            context: params.template === 'index' ? 'home' : params.template,
+            context: params.template === 'index' && previous === 0 ? 'home' : params.template,
             posts: postsPageToGenerate,
             tag: params.tag,
             author: params.author,
