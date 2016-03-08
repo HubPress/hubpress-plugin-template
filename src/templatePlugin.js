@@ -123,7 +123,8 @@ export function templatePlugin (hubpress) {
 
   hubpress.on('requestTheme', function (opts) {
     console.log('Theme plugin', opts);
-    const themeName = opts.data.config.theme.name;
+    // TODO lowerCase will be useless after version 0.6.0
+    const themeName = opts.data.config.theme.name.toLowerCase();
 
     return load(themeName, opts.data.config)
       .then((themeInfos) => {
