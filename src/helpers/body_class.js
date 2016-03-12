@@ -16,7 +16,6 @@ var handlebars = require('handlebars'),
     body_class;
 
 body_class = function (options) {
-  console.error('body_class activeTheme', config.activeTheme.name);
     var classes = [],
         context = options.data.root.context,
         post = this.post,

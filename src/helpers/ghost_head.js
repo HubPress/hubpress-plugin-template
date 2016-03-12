@@ -75,7 +75,7 @@ function finaliseStructuredData(metaData) {
 
 function ghost_head(options) {
     // if error page do nothing
-    console.error('Check ghost_head options', options)
+    console.warn('Check ghost_head options', options, this.statusCode, this.context)
     if (this.statusCode >= 400) {
         return;
     }
