@@ -1,11 +1,12 @@
 function isPost(jsonData) {
-    return jsonData.hasOwnProperty('html') && jsonData.hasOwnProperty('markdown') &&
-        jsonData.hasOwnProperty('title') && jsonData.hasOwnProperty('slug');
+    return jsonData.hasOwnProperty('html') &&
+        jsonData.hasOwnProperty('title') &&
+        jsonData.type === 'post'; //jsonData.hasOwnProperty('slug');
 }
 
 function isTag(jsonData) {
     return jsonData.hasOwnProperty('name') && jsonData.hasOwnProperty('slug') &&
-        jsonData.hasOwnProperty('description') && jsonData.hasOwnProperty('parent');
+        jsonData.hasOwnProperty('description'); // && jsonData.hasOwnProperty('parent');
 }
 
 function isUser(jsonData) {

@@ -35,6 +35,10 @@ export function generateAuthors (opts) {
     let authorObject = authorPosts[0].author;
     authorObject.name = authorObject.name || authorObject.login;
     authorObject.slug = key;
+    // --- Required for template
+    authorObject.website = authorObject.blog;
+    authorObject.status = '';
+    // ---
     returnedOpts = paginationGenerator.generate({opts: returnedOpts, posts: authorPosts, author: authorObject, template, path: `author/${key}/`});
 
   });

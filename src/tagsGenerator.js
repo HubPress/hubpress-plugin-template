@@ -65,7 +65,8 @@ export function generateTags (opts) {
 
     let tagObject = {
       name: key,
-      slug: slugify(key)
+      slug: slugify(key),
+      description: null
     }
     returnedOpts = paginationGenerator.generate({opts: returnedOpts, posts: tag, tag: tagObject, template, path: `tag/${key}/`});
 

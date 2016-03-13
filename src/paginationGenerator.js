@@ -78,7 +78,8 @@ class PaginationGenerator {
         postTags = _.map(post.tags, (tag) => {
           return  {
             name: tag,
-            slug: slugify(tag)
+            slug: slugify(tag),
+            description: null
           };
         });
       }
