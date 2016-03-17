@@ -16,8 +16,7 @@ export function generatePost (opts, post) {
     };
   });
 
-  // If it's a new post postData.author is undefined
-  const userInfos = postData.author;// || opts.state.authentication.credentials.userInformations;
+  const userInfos = postData.author;
   postData.author = {
     id: userInfos.id,
     name: userInfos.name || userInfos.login,

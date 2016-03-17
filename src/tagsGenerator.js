@@ -10,7 +10,7 @@ export function generateTags (opts) {
   let posts;
 
 
-  // If template Author is not available, do not process
+  // If template Tag is not available, do not process
   if (!Builder.isTemplateAvailable(template)) {
     return opts;
   }
