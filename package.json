@@ -16,7 +16,7 @@
   "dependencies": {
     "downsize": "0.0.8",
     "handlebars": "^4.0.5",
-    "hubpress-core-slugify": "github:hubpress/hubpress-core-slugify#0b1b560",
+    "hubpress-core-slugify": "github:hubpress/hubpress-core-slugify#cfe920c",
     "lodash": "^4.5.0",
     "moment": "^2.11.2",
     "q": "^1.4.1",
