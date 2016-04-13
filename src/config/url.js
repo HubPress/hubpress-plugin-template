@@ -174,7 +174,7 @@ function urlFor(context, data, absolute) {
     } else if (_.isString(context) && _.indexOf(knownObjects, context) !== -1) {
         // trying to create a url for an object
         if (context === 'post' && data.post) {
-            urlPath = data.post.url;
+            urlPath = urlJoin(getBaseUrl(), '/', data.post.url);
             secure = data.secure;
         } else if (context === 'tag' && data.tag) {
             urlPath = urlJoin(getBaseUrl(), '/', ghostConfig.routeKeywords.tag, data.tag.slug, '/');
