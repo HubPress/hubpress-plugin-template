@@ -1,5 +1,6 @@
 import Q from 'q';
 import request from 'superagent';
+import _ from 'lodash';
 import { generateIndex } from './indexGenerator';
 import { generatePost } from './postGenerator';
 import { generatePosts } from './postsGenerator';
@@ -11,7 +12,6 @@ function load(name, config) {
 
   let deferred = Q.defer();
   let promises = [];
-  let meta = config.meta;
   let hubpressUrl = config.urls.hubpress;
   request.get(`${hubpressUrl}/themes/${name}/theme.json?dt=${Date.now()}`)
     .end((err, response) => {
@@ -38,7 +38,7 @@ function load(name, config) {
         request.get(`${hubpressUrl}/themes/${name}/${file[1]}?v=${version}`)
           .end((err, response) => {
             if (err) {
-              deferredFile.reject(err)
+              deferredFile.reject(err);
               return;
             }
             deferredFile.resolve({
@@ -57,7 +57,7 @@ function load(name, config) {
         request.get(`${hubpressUrl}/hubpress/scripts/helpers/tpl/pagination.hbs`)
           .end((err, response) => {
             if (err) {
-              deferredPagination.reject(err)
+              deferredPagination.reject(err);
               return;
             }
 
@@ -75,7 +75,7 @@ function load(name, config) {
         request.get(`${hubpressUrl}/hubpress/scripts/helpers/tpl/nav.hbs`)
           .end((err, response) => {
             if (err) {
-              deferredNav.reject(err)
+              deferredNav.reject(err);
               return;
             }
             deferredNav.resolve({
@@ -92,7 +92,7 @@ function load(name, config) {
         request.get(`${hubpressUrl}/hubpress/scripts/helpers/tpl/navigation.hbs`)
           .end((err, response) => {
             if (err) {
-              deferredNav.reject(err)
+              deferredNav.reject(err);
               return;
             }
             deferredNav.resolve({
@@ -141,26 +141,36 @@ export function templatePlugin (hubpress) {
         const data = Object.assign({}, opts.data, {theme: mergeTheme});
         return Object.assign({}, opts, {data});
       });
-  })
+  });
 
-    hubpress.on('requestGenerateIndex', opts => {
-      return generateIndex(opts);
-    });
+  hubpress.on('requestGenerateIndex', opts => {
+    console.info('Template Plugin - requestGenerateIndex');
+    console.log('requestGenerateIndex', opts);
+    return generateIndex(opts);
+  });
 
-    hubpress.on('requestGeneratePost', opts => {
-      return generatePost(opts, opts.data.post);
-    });
+  hubpress.on('requestGeneratePost', opts => {
+    console.info('Template Plugin - requestGeneratePost');
+    console.log('requestGeneratePost', opts);
+    return generatePost(opts, opts.data.post);
+  });
 
-    hubpress.on('requestGeneratePosts', opts => {
-      return generatePosts(opts, opts.data.post);
-    });
+  hubpress.on('requestGeneratePosts', opts => {
+    console.info('Template Plugin - requestGeneratePosts');
+    console.log('requestGeneratePosts', opts);
+    return generatePosts(opts, opts.data.post);
+  });
 
-    hubpress.on('requestGenerateTags', opts => {
-      return generateTags(opts, opts.data.post);
-    });
+  hubpress.on('requestGenerateTags', opts => {
+    console.info('Template Plugin - requestGenerateTags');
+    console.log('requestGenerateTags', opts);
+    return generateTags(opts, opts.data.post);
+  });
 
-    hubpress.on('requestGenerateAuthors', opts => {
-      return generateAuthors(opts, opts.data.post);
-    });
+  hubpress.on('requestGenerateAuthors', opts => {
+    console.info('Template Plugin - requestGenerateAuthors');
+    console.log('requestGenerateAuthors', opts);
+    return generateAuthors(opts, opts.data.post);
+  });
 
 }
