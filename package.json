@@ -1,6 +1,6 @@
 {
   "name": "hubpress-plugin-template",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Template compiler for HubPress",
   "main": "lib/templatePlugin.js",
   "scripts": {

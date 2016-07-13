@@ -17,7 +17,7 @@ var config          = require('../config'),
 
 page_url = function (context, block) {
     /*jshint unused:false*/
-    var url = config.paths.subdir;
+    var url = config.url + config.paths.subdir;
 
     if (this.tagSlug !== undefined) {
         url += '/' + config.routeKeywords.tag + '/' + this.tagSlug;
