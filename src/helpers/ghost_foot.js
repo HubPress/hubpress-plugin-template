@@ -46,7 +46,7 @@ ghost_foot = function (options) {
 
     foot.push(
     `
-    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'</script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
     `
     );
     var footString = _.reduce(foot, function (memo, item) { return memo + ' ' + item; }, '');
