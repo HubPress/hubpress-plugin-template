@@ -13,13 +13,13 @@ export function generateAuthors (opts) {
     return opts;
   }
 
-  if (opts.data.author) {
-    posts = opts.data.publishedPosts.filter(post => {
-      return post.author.login === opts.data.author.login;
+  if (opts.nextState.author) {
+    posts = opts.nextState.publishedPosts.filter(post => {
+      return post.author.login === opts.nextState.author.login;
     });
   }
   else {
-    posts = opts.data.publishedPosts;
+    posts = opts.nextState.publishedPosts;
   }
 
   let authors = _.reduce(posts, (memo, post) => {
@@ -29,7 +29,7 @@ export function generateAuthors (opts) {
   }, {});
 
 
-  let returnedOpts = opts;
+  let returnedOpts = {opts};
   _.each(authors, (authorPosts, key) => {
 
     let authorObject = authorPosts[0].author;
@@ -39,7 +39,8 @@ export function generateAuthors (opts) {
     authorObject.website = authorObject.blog;
     authorObject.status = '';
     // ---
-    returnedOpts = paginationGenerator.generate({opts: returnedOpts, posts: authorPosts, author: authorObject, template, path: `author/${key}/`});
+    returnedOpts = paginationGenerator.generate({opts: returnedOpts.opts, posts: authorPosts, author: authorObject, template, path: `author/${key}/`});
+    console.error(returnedOpts)
 
   });
 

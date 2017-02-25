@@ -9,9 +9,8 @@ export function generatePosts (opts) {
 
   let postPromises = [];
   let returnedOpts = opts;
-  opts.data.publishedPosts.forEach(post => {
+  opts.nextState.publishedPosts.forEach(post => {
     returnedOpts = generatePost(returnedOpts, post);
   })
-  // TODO Test me i'm sure i'm famous
   return returnedOpts;
 }

@@ -119,14 +119,16 @@ function load(name, config) {
   return deferred.promise;
 }
 
-export function templatePlugin (hubpress) {
+export function templatePlugin (context) {
 
-  hubpress.on('requestTheme', function (opts) {
-    console.log('Theme plugin', opts);
-    // TODO lowerCase will be useless after version 0.6.0
-    const themeName = opts.data.config.theme.name.toLowerCase();
+  context.on('hubpress:request-theme', function (opts) {
+    console.info('templatePlugin Plugin - hubpress:request-theme');
+    console.log('hubpress:request-theme', opts);
+    // lowerCase is useless after version 0.6.0
+    const themeName = opts.rootState.application.config.theme.name.toLowerCase()
+    const configuration = opts.rootState.application.config
 
-    return load(themeName, opts.data.config)
+    return load(themeName, configuration)
       .then((themeInfos) => {
         const theme = {
           name: themeName,
@@ -134,43 +136,53 @@ export function templatePlugin (hubpress) {
           version: themeInfos.version
         };
 
-        Builder.registerTheme(opts.data.config, theme);
-        Builder.registerFiles(theme.files);
+        Builder.registerTheme(configuration, theme)
+        Builder.registerFiles(theme.files)
 
-        const mergeTheme = Object.assign({}, theme);
-        const data = Object.assign({}, opts.data, {theme: mergeTheme});
-        return Object.assign({}, opts, {data});
+        const mergeTheme = Object.assign({}, theme)
+        opts.nextState = Object.assign({}, opts.nextState, {theme: mergeTheme})
+        return opts
       });
   });
 
-  hubpress.on('requestGenerateIndex', opts => {
+  context.on('requestGenerateIndex', opts => {
     console.info('Template Plugin - requestGenerateIndex');
     console.log('requestGenerateIndex', opts);
-    return generateIndex(opts);
+    const updatedOpts = generateIndex(opts);
+    console.log('requestGenerateIndex return', updatedOpts);
+    return updatedOpts
   });
 
-  hubpress.on('requestGeneratePost', opts => {
+  context.on('requestGeneratePost', opts => {
     console.info('Template Plugin - requestGeneratePost');
     console.log('requestGeneratePost', opts);
-    return generatePost(opts, opts.data.post);
+    const updatedOpts = generatePost(opts, opts.nextState.post);
+    console.log('requestGeneratePost return', updatedOpts);
+    return updatedOpts
   });
 
-  hubpress.on('requestGeneratePosts', opts => {
+  context.on('requestGeneratePosts', opts => {
     console.info('Template Plugin - requestGeneratePosts');
     console.log('requestGeneratePosts', opts);
-    return generatePosts(opts, opts.data.post);
+    const updatedOpts = generatePosts(opts);
+    console.log('requestGeneratePosts return', updatedOpts);
+    return updatedOpts
   });
 
-  hubpress.on('requestGenerateTags', opts => {
+  context.on('requestGenerateTags', opts => {
     console.info('Template Plugin - requestGenerateTags');
     console.log('requestGenerateTags', opts);
-    return generateTags(opts, opts.data.post);
+    const updatedOpts = generateTags(opts);
+    console.log('requestGenerateTags return', updatedOpts);
+    return updatedOpts
   });
 
-  hubpress.on('requestGenerateAuthors', opts => {
+  context.on('requestGenerateAuthors', opts => {
     console.info('Template Plugin - requestGenerateAuthors');
     console.log('requestGenerateAuthors', opts);
-    return generateAuthors(opts, opts.data.post);
+    const updatedOpts = generateAuthors(opts);
+    console.log('requestGenerateAuthors return', updatedOpts);
+    return updatedOpts
   });
 
 }

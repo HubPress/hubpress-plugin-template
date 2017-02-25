@@ -28,11 +28,11 @@ export function generatePost (opts, post) {
     slug: userInfos.login
   };
 
-  const config = opts.data.config;
+  const config = opts.rootState.application.config;
   const urls = config.urls;
   const theme = {
-    name: opts.data.theme.name,
-    version: opts.data.theme.version,
+    name: opts.nextState.theme.name,
+    version: opts.nextState.theme.version,
     url: config.urls.theme
   };
   postData.urls = urls;
@@ -47,7 +47,10 @@ export function generatePost (opts, post) {
       relativeUrl: modifiedPost.url,
       post: postData,
       author: postData.author
-    }, _.pick(opts.data, ['config', 'theme']));
+    }, {
+      config: config,
+      theme: opts.nextState.theme
+    });
 
   const postsToPublish = []
   postsToPublish.push({
@@ -61,8 +64,6 @@ export function generatePost (opts, post) {
     published_at: modifiedPost.published_at
   });
 
-  const elementsToPublish = (opts.data.elementsToPublish || []).concat(postsToPublish);
-  const data = Object.assign({}, opts.data, {elementsToPublish});
-  return Object.assign({}, opts, {data});
-
+  opts.nextState.elementsToPublish = (opts.nextState.elementsToPublish || []).concat(postsToPublish);
+  return opts
 }

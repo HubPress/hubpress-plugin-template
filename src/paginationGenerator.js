@@ -8,7 +8,7 @@ class PaginationGenerator {
     console.info('PaginationGenerator - generate');
     console.log('PaginationGenerator - generate', params);
     const posts = params.posts;
-    const config = params.opts.data.config;
+    const config = params.opts.rootState.application.config;
     const siteConfig = config.site;
     siteConfig.url = config.urls.site;
     let pageCount = 1;
@@ -17,8 +17,8 @@ class PaginationGenerator {
     let postsPageToPublish = [];
     let nbPostPerPage = parseInt(siteConfig.postsPerPage || 10, 10);
     const theme = {
-      name: params.opts.data.theme.name,
-      version: params.opts.data.theme.version,
+      name: params.opts.nextState.theme.name,
+      version: params.opts.nextState.version,
       url: config.urls.theme
     };
     let urls = config.urls;
@@ -42,7 +42,10 @@ class PaginationGenerator {
         // urls: urls,
         socialnetwork: socialnetwork,
         title: siteConfig.title,
-      }, _.pick(params.opts.data, ['config', 'theme']));
+      }, {
+        config: config,
+        theme: params.opts.nextState.theme
+      });// _.pick(params.opts.data, ['config', 'theme']));
 
       postsPageToPublish.push( {
         name:`page-${pageCount}`,
@@ -51,9 +54,8 @@ class PaginationGenerator {
         message: `Publish page-${pageCount} ${params.template}`
       })
 
-      const elementsToPublish = (params.opts.data.elementsToPublish || []).concat(postsPageToPublish);
-      const data = Object.assign({}, params.opts.data, {elementsToPublish});
-      return Object.assign({}, params.opts, {data});
+      params.opts.nextState.elementsToPublish = (params.opts.nextState.elementsToPublish || []).concat(postsPageToPublish)
+      return params
     }
 
     let totalPage = Math.ceil((posts.length) / nbPostPerPage);
@@ -131,7 +133,10 @@ class PaginationGenerator {
             // urls: urls,
             socialnetwork: socialnetwork,
             relativeUrl: ''
-          }, _.pick(params.opts.data, ['config', 'theme']));
+          }, {
+            config: config,
+            theme: params.opts.nextState.theme
+          });
 
         postsPageToPublish.push( {
           name:`page-${pageCount}`,
@@ -146,9 +151,8 @@ class PaginationGenerator {
 
     });
 
-    const elementsToPublish = (params.opts.data.elementsToPublish || []).concat(postsPageToPublish);
-    const data = Object.assign({}, params.opts.data, {elementsToPublish});
-    return Object.assign({}, params.opts, {data});
+    params.opts.nextState.elementsToPublish = (params.opts.nextState.elementsToPublish || []).concat(postsPageToPublish);
+    return params.opts;
   }
 }
 
