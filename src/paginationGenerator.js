@@ -9,7 +9,7 @@ class PaginationGenerator {
     console.log('PaginationGenerator - generate', params);
     const posts = params.posts;
     const config = params.opts.rootState.application.config;
-    const siteConfig = config.site;
+    const siteConfig = config.site || {};
     siteConfig.url = config.urls.site;
     let pageCount = 1;
     let pagePath = (params.path || '') + 'index.html';
