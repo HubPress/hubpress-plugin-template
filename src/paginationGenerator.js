@@ -55,7 +55,7 @@ class PaginationGenerator {
       })
 
       params.opts.nextState.elementsToPublish = (params.opts.nextState.elementsToPublish || []).concat(postsPageToPublish)
-      return params
+      return params.opts
     }
 
     let totalPage = Math.ceil((posts.length) / nbPostPerPage);
