@@ -29,7 +29,7 @@ export function generateAuthors (opts) {
   }, {});
 
 
-  let returnedOpts = {opts};
+  let returnedOpts = opts;
   _.each(authors, (authorPosts, key) => {
 
     let authorObject = authorPosts[0].author;
@@ -39,8 +39,7 @@ export function generateAuthors (opts) {
     authorObject.website = authorObject.blog;
     authorObject.status = '';
     // ---
-    returnedOpts = paginationGenerator.generate({opts: returnedOpts.opts, posts: authorPosts, author: authorObject, template, path: `author/${key}/`});
-    console.error(returnedOpts)
+    returnedOpts = paginationGenerator.generate({opts: returnedOpts, posts: authorPosts, author: authorObject, template, path: `author/${key}/`});
 
   });
 
