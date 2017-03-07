@@ -1,7 +1,7 @@
 var config = require('../../config');
 
 function getCoverImage(data) {
-    var context = data.context ? data.context[0] : null,
+    var context = data.context, // ? data.context[0] : null,
         blog = config.theme,
         contextObject = data[context] || blog;
 

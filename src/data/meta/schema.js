@@ -99,7 +99,7 @@ function getAuthorSchema(metaData, data) {
 
 function getSchema(metaData, data) {
     if (!config.isPrivacyDisabled('useStructuredData')) {
-        var context = data.context ? data.context[0] : null;
+        var context = data.context; // ? data.context[0] : null;
         if (context === 'post') {
             return getPostSchema(metaData, data);
         } else if (context === 'home') {

@@ -1,7 +1,7 @@
 var config = require('../../config');
 
 function getAuthorUrl(data, absolute) {
-    var context = data.context ? data.context[0] : null;
+    var context = data.context; // ? data.context[0] : null;
     if (data.author) {
         return config.urlFor('author', {author: data.author}, absolute);
     }
