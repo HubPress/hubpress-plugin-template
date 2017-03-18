@@ -6,3 +6,10 @@ Use template to build html pages
 
 . Complete this README
 . Add tests
+
+
+== Copyright & License
+
+Released under the MIT License.
+Copyright (c) 2015-2017 Anthonny Quérouil
+Copyright (c) 2013-2017 Ghost Foundation (for portions of code in folders config, data, helpers and utils)
