@@ -29,7 +29,9 @@ export function generateTags (opts) {
   // }
   if (opts.nextState.tags) {
     posts = opts.nextState.publishedPosts.filter(post => {
-      return _.intersection(opts.nextState.tags, post.tags).length;
+      const trimmedStateTags = opts.nextState.tags.map(v => v.trim())
+      const trimmedPostTags = post.tags.map(v => v.trim())
+      return _.intersection(trimmedStateTags, trimmedPostTags).length;
     });
   }
   else {
