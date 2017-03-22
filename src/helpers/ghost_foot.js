@@ -24,7 +24,7 @@ ghost_foot = function (options) {
         version: ''
     }));
     foot.push(utils.scriptTemplate({
-        source: '//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js',
+        source: '//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js',
         version: ''
     }));
     foot.push(

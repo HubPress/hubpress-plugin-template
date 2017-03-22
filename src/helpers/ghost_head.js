@@ -14,6 +14,7 @@ var getMetaData = require('../data/meta'),
     escapeExpression = hbs.handlebars.Utils.escapeExpression,
     SafeString = hbs.handlebars.SafeString,
     _ = require('lodash'),
+    utils = require('./utils'),
     //filters = require('../filters'),
     // assetHelper = require('./asset'),
     config = require('../config');
@@ -121,6 +122,9 @@ function ghost_head(options) {
         head.push('<link rel="alternate" type="application/rss+xml" title="' +
         escapeExpression(metaData.blog.title)  + '" href="' +
         escapeExpression(metaData.rssUrl) + '" />');
+        head.push(utils.stylesheetTemplate({
+            source: '//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/atom-one-dark.min.css'
+        }))
 
     //    return api.settings.read({key: 'ghost_head'});
     //}).then(function (response) {
