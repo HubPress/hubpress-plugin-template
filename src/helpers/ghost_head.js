@@ -125,6 +125,11 @@ function ghost_head(options) {
         head.push(utils.stylesheetTemplate({
             source: '//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/atom-one-dark.min.css'
         }))
+        head.push(
+        `
+        <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+        `
+        );
 
     //    return api.settings.read({key: 'ghost_head'});
     //}).then(function (response) {
